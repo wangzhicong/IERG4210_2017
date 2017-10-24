@@ -34,12 +34,6 @@
         <div><input id="prod_name_" type="name" name="description" required="true" pattern="^[\w\- ]+$"
             /></div>
 
-        <label for="prod_catid">Image type *</label>
-        <div><select id="prod_catid_" name="image_type" required="true">
-            <option value=".jpg">jpg</option>
-                <option value=".png">png</option>
-                <option value=".gif">gif</option>
-            </select></div>
 
         <label for="prod_name">Image *</label>
         <div><input type="file" name="myfile" required="true" accept="image/jpeg,image/gif,image/png" />
