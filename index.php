@@ -134,7 +134,7 @@
         var url = window.location.href;
 
 
-        var tmp = url.replace(/\?catid=[\d]/gi,"");
+        var tmp = url.replace(/\?catid=[%20]*[\d]/gi,"");
 
 
         history.replaceState(null,url,tmp);
@@ -166,7 +166,7 @@
                 var url = window.location.href;
 
                 //var tmp = url.replace(/&prod=[\w\-\s]*/gi,"");
-                var tmp = url.replace(/\?catid=[\d]*/gi,"");
+                var tmp = url.replace(/\?catid=[%20]*[\d]*/gi,"");
                 history.replaceState(null,url,tmp+'?catid='+(id+1));
 
 
