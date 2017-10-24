@@ -22,11 +22,11 @@ function ierg4210_prod_add()
 
 
 
-    if($_FILES['myfile']['size']>10240) {
+    if($_FILES['myfile']['size'] >  10485760) {
         echo "the file is too large";
         exit();
     }
-    if( $_FILES['myfile']['type']=="image/jpeg" ||  $_FILES['myfile']['name']=="image/png" || $_FILES['myfile']['name']=="image/gif" ) {
+    if( $_FILES['myfile']['type']=="image/jpeg" ||  $_FILES['myfile']['type']=="image/png" || $_FILES['myfile']['type']=="image/gif" ) {
 
         $q = $conn->prepare('select name from products');
         $q->execute();
@@ -41,10 +41,20 @@ function ierg4210_prod_add()
         }
 
 
-
+        $new_name = "dummpy";
         $new_name = $conn->lastInsertId() . $_POST[image_type];
-        $q = $conn->prepare('INSERT INTO products  VALUES (null,' . $_POST[catid] . ',\'' . $_POST[name] . '\',\'' . $new_name . '\',' . $_POST[price] . ',\'' . $_POST[description] . '\' )');
+        $q = $conn->prepare('INSERT INTO products  VALUES (null,' . $_POST[catid] . ',\'' . $_POST[name] . '\',\'' . $new_name . '\',' . $_POST[price] . ',\'' . $_POST['description'] . '\' )');
         $q->execute();
+        if($_FILES['myfile']['type']=="image/jpeg" )
+            $new_name = $conn->lastInsertId() . ".jpg";
+        elseif ($_FILES['myfile']['type']=="image/png")
+            $new_name = $conn->lastInsertId() . ".png";
+        else
+            $new_name = $conn->lastInsertId() . ".gif";
+
+        $q = $conn->prepare( 'UPDATE products SET  image_source = \''.$new_name.'\' WHERE name = \''. $_POST[name]  . '\'') ;
+
+        $q->execute();#->fetcharray();
         #echo "here2";
         #echo $_FILES['myfile']['tmp_name'] ."<br>";
 
