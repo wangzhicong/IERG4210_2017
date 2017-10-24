@@ -95,8 +95,7 @@
     }
 </style>
 
-
-<body onload="load_cats()"></body>
+<body   onload="load_cats();GetRequest()"></body>
 
 <h1 class="title" id="demo"><img src="img/three%20bros.gif">wangzhicong's weapon store</h1>
 <h3 id="nave">
@@ -118,10 +117,9 @@
 
 </nav>
 
+<table id="prod_info">
 
-
-
-<table id="prod_info"></table>
+</table>
 
 <footer class="foot">more info</footer>
 
@@ -136,7 +134,7 @@
         var url = window.location.href;
 
 
-        var tmp = url.replace(/catid=[\d]/gi,"");
+        var tmp = url.replace(/\?catid=[\d]/gi,"");
 
 
         history.replaceState(null,url,tmp);
@@ -159,6 +157,7 @@
     }
 
 
+
     function load_list(id) {
         var xhttp = new XMLHttpRequest();
 
@@ -167,8 +166,8 @@
                 var url = window.location.href;
 
                 //var tmp = url.replace(/&prod=[\w\-\s]*/gi,"");
-                var tmp = url.replace(/catid=[\d]*/gi,"");
-                history.replaceState(null,url,tmp+'catid='+(id+1));
+                var tmp = url.replace(/\?catid=[\d]*/gi,"");
+                history.replaceState(null,url,tmp+'?catid='+(id+1));
 
 
                 //location.href = '?catid='+(id+1);
@@ -206,4 +205,24 @@
 
 
     }
+
+
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = new Object();
+        if (url.indexOf("?") != -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for(var i = 0; i < strs.length; i ++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+        //alert(theRequest['catid']);
+        load_list(theRequest['catid']-1);
+    }
+
+
+
+
+
 </script>
