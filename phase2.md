@@ -1,5 +1,5 @@
 1155092208 wang zhicong
-home page http://13.228.142.209/home.html
+home page http://13.228.142.209/
 
 you can goto folder test to check disabled directory index. 
 
