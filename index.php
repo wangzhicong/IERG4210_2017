@@ -124,9 +124,8 @@
 <footer class="foot">more info</footer>
 
 
+
 <script>
-    //var url = window.location.href;
-    //alert(url);
     function home_page(){
         document.getElementById("prod_info").innerHTML ='';
         document.getElementById("list").innerHTML = '<li>Home page with nothing</li>';
