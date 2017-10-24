@@ -124,9 +124,14 @@
 <footer class="foot">more info</footer>
 
 
+<<<<<<< HEAD
 <script>
     //var url = window.location.href;
     //alert(url);
+=======
+
+<script>
+>>>>>>> master
     function home_page(){
         document.getElementById("prod_info").innerHTML ='';
         document.getElementById("list").innerHTML = '<li>Home page with nothing</li>';
@@ -134,7 +139,11 @@
         var url = window.location.href;
 
 
+<<<<<<< HEAD
         var tmp = url.replace(/\?catid=[\d]/gi,"");
+=======
+        var tmp = url.replace(/\?catid=[%20]*[\d]/gi,"");
+>>>>>>> master
 
 
         history.replaceState(null,url,tmp);
@@ -166,7 +175,11 @@
                 var url = window.location.href;
 
                 //var tmp = url.replace(/&prod=[\w\-\s]*/gi,"");
+<<<<<<< HEAD
                 var tmp = url.replace(/\?catid=[\d]*/gi,"");
+=======
+                var tmp = url.replace(/\?catid=[%20]*[\d]*/gi,"");
+>>>>>>> master
                 history.replaceState(null,url,tmp+'?catid='+(id+1));
 
 

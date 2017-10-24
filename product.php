@@ -29,6 +29,11 @@ function load_list(){
     $i=0;
 #var_dump($result);
 #$names=array();
+
+    if(sizeof($result) == 0){
+        echo '<li>This is a wrong category, please go to the home page</li>';
+        exit();
+    }
     while($i < sizeof( $result) ){
         $names[$i] = $result[$i][name];
         $catids[$i] = $result[$i][catid];
