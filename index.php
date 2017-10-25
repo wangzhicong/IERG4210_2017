@@ -215,9 +215,12 @@
             for(var i = 0; i < strs.length; i ++) {
                 theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
             }
+            load_list(theRequest['catid']-1);
         }
+        else
+            return;
         //alert(theRequest['catid']);
-        load_list(theRequest['catid']-1);
+
     }
 
 
