@@ -95,7 +95,7 @@
     }
 </style>
 
-<body   onload="load_cats();GetRequest()"></body>
+<body   onload="load_cats();GetRequest();"></body>
 
 <h1 class="title" id="demo"><img src="img/three%20bros.gif">wangzhicong's weapon store</h1>
 <h3 id="nave">
@@ -124,14 +124,8 @@
 <footer class="foot">more info</footer>
 
 
-<<<<<<< HEAD
 <script>
-    //var url = window.location.href;
-    //alert(url);
-=======
 
-<script>
->>>>>>> master
     function home_page(){
         document.getElementById("prod_info").innerHTML ='';
         document.getElementById("list").innerHTML = '<li>Home page with nothing</li>';
@@ -139,11 +133,8 @@
         var url = window.location.href;
 
 
-<<<<<<< HEAD
-        var tmp = url.replace(/\?catid=[\d]/gi,"");
-=======
         var tmp = url.replace(/\?catid=[%20]*[\d]/gi,"");
->>>>>>> master
+
 
 
         history.replaceState(null,url,tmp);
@@ -175,11 +166,8 @@
                 var url = window.location.href;
 
                 //var tmp = url.replace(/&prod=[\w\-\s]*/gi,"");
-<<<<<<< HEAD
-                var tmp = url.replace(/\?catid=[\d]*/gi,"");
-=======
+
                 var tmp = url.replace(/\?catid=[%20]*[\d]*/gi,"");
->>>>>>> master
                 history.replaceState(null,url,tmp+'?catid='+(id+1));
 
 
@@ -229,9 +217,12 @@
             for(var i = 0; i < strs.length; i ++) {
                 theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
             }
+            load_list(theRequest['catid']-1);
         }
+        else
+            return;
         //alert(theRequest['catid']);
-        load_list(theRequest['catid']-1);
+
     }
 
 
