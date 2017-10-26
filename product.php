@@ -46,7 +46,7 @@ function load_list(){
 
     $j = 0;
     while($j < $i) {
-        $txt = $txt . '<li><a onclick=\'load_prod('.$catids[$j] .',"'. $names[$j]. '")\' ><img  src="img/' .$image_names[$j] .'"></>' . '<a onclick=\'load_prod('.$catids[$j] .',"'.$names[$j].'")\' > name :'.$names[$j]. '</a><br />' . '<a> price : '.$prices[$j]. '</a><br />'
+        $txt = $txt . '<li><a onclick=\'load_prod('.$catids[$j] .',"'. $names[$j]. '")\' ><img  src="img/' .$image_names[$j] .'"></a>' . '<a onclick=\'load_prod('.$catids[$j] .',"'.$names[$j].'")\' > name :'.$names[$j]. '</a><br />' . '<a> price : '.$prices[$j]. '</a><br />'
          . '<a><button>addToCart</button></a></li>';
         $j=$j+1;
     }
