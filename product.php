@@ -47,8 +47,13 @@ function load_list(){
 
     $j = 0;
     while($j < $i) {
+<<<<<<< HEAD
         $txt = $txt . '<li><a onclick=\'load_prod('.$catids[$j] .','. $pids[$j]. ')\' ><img  src="img/' .$image_names[$j] .'"/></a>' . '<a onclick=\'load_prod('.$catids[$j] .','.$pids[$j] .')\' > name :'.$names[$j]. '</a><br />' . '<a> price : '.$prices[$j]. '</a><br />'
          . '<a><button id="tocart" onclick="addtocart('.$pids[$j].')">addToCart</button></a></li>';
+=======
+        $txt = $txt . '<li><a onclick=\'load_prod('.$catids[$j] .',"'. $names[$j]. '")\' ><img  src="img/' .$image_names[$j] .'"></a>' . '<a onclick=\'load_prod('.$catids[$j] .',"'.$names[$j].'")\' > name :'.$names[$j]. '</a><br />' . '<a> price : '.$prices[$j]. '</a><br />'
+         . '<a><button>addToCart</button></a></li>';
+>>>>>>> 951fcfbd5c09b49a0a3da7be194492516c6aec23
         $j=$j+1;
     }
     echo $txt;
