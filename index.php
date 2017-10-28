@@ -22,16 +22,13 @@
 <style>
     nav{
         position:absolute;
-        left: 75%;
+        left: 70%;
         top: 300px;
         z-index: 100;
         color: white;
     }
-    nav ol{display:none;position:absolute;margin:-20px;width: 200px; color: black;
+    nav ul{display:none;position:absolute;margin: -20px;width: 400px; color: black;
         }
-    button{
-        position: relative ;right: 0px;bottom: 0px;
-    }
     nav input{
         width: 30px;
         padding: 0px 0px;
@@ -42,7 +39,7 @@
         border-radius: 4px;
         box-sizing: border-box;
     }
-    nav:hover ol{display:block;background-color: #ffffff}
+    nav:hover ul{display:block;background-color: green;}
 </style>
 
 <style>
@@ -95,7 +92,7 @@
     }
 </style>
 
-<body   onload="load_cats();GetRequest()"></body>
+<body   onload="load_cats();GetRequest();refresh_cart()"></body>
 
 <h1 class="title" id="demo"><img src="img/three%20bros.gif">wangzhicong's weapon store</h1>
 <h3 id="nave">
@@ -107,13 +104,9 @@
 
 
 <nav>
-    <p>shopping list</p>
-    <ol>
-        <li>item1   $33<input id="num_1" name="num_1" placeholder="1"></li>
-        <li>item2   $33<input id="num_2" name="num_2" placeholder="1"></li>
-        <li>item3   $33<input id="num_3" name="num_3" placeholder="1"></li>
-        <a href="https://www.paypal.com"><button>Checkout</button></a>
-    </ol>
+    <p id = "total"></p>
+    <ul id ="cart_list"></ul>
+
 
 </nav>
 
@@ -126,6 +119,73 @@
 
 
 <script>
+
+    function addtocart(pid){
+        //alert('add to cart action');
+        if(localStorage.getItem(pid)== null)
+            localStorage.setItem(pid,1);
+        //change the list info
+        refresh_cart();
+
+    }
+
+    function refresh_cart()
+    {
+        //get information from php
+        document.getElementById("cart_list").innerHTML='';
+        var total_price=0;
+        for(var i=0;i<localStorage.length;i++){
+            //alert(localStorage.key(i));
+            var pid = parseInt(localStorage.key(i));
+            //alert(pid+'num '+localStorage.getItem(pid));
+
+
+            var xhttp = new XMLHttpRequest();
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var info = JSON.parse(this.response);
+                    info = info[0];
+                    total_price += info.price * parseInt(localStorage.getItem(pid));
+                    var tmp ='<li>       '+info.name+ '      $'+ info.price + '         <button onclick=\"increase_num('+   pid  +  ')\">+</button> '+ localStorage.getItem(pid) + '<button onclick=\"decrease_num(' +  pid + ')\">-</button></li>';
+                      //  '<tr><th>'+info.name+ '</th><th>'+ info.price + '</th><th> <button onclick=\"increase_num('+   pid  +  ')\">+</button> </th><th>'+ localStorage.getItem(pid) + '</th><th><button onclick=\"decrease_num(' +  pid + ')\">-</button></th></tr>';
+                    document.getElementById("cart_list").innerHTML = document.getElementById("cart_list").innerHTML + tmp;
+                    document.getElementById("total").innerHTML = "Total price = " + total_price;
+                    document.getElementById("total").innerHTML = "Shopping cart :  Total price = " + total_price;
+                }
+            };
+            xhttp.open("GET", "product.php?pid="+pid +"&action=cart_info", false);
+            xhttp.send();
+
+            //alert('reach here');
+
+            // <li>item3   $33<input id="num_3" name="num_3" placeholder="1"></li>  <button onclick="addtocart()">addToCart</button>
+        }
+        //document.getElementById("cart_list").innerHTML = cart_info;
+        document.getElementById("cart_list").innerHTML = document.getElementById("cart_list").innerHTML + '<button>pay</button>';
+
+
+    }
+    function decrease_num(pid){
+        var num = localStorage.getItem(pid) ;
+        if(parseInt(num)>0)
+            localStorage.setItem(pid,(parseInt(num) - 1));
+        num = localStorage.getItem(pid) ;
+        if(parseInt(num)<=0)
+            localStorage.removeItem(pid);
+        //alert(localStorage.getItem(pid));
+        refresh_cart();
+    }
+    function increase_num(pid){
+        var num = localStorage.getItem(pid) ;
+        localStorage.setItem(pid,(parseInt(num) + 1));
+        //alert(localStorage.getItem(pid));
+        refresh_cart();
+    }
+
+
+
+
     function home_page(){
         document.getElementById("prod_info").innerHTML ='';
         document.getElementById("list").innerHTML = '<li>Home page with nothing</li>';
@@ -184,7 +244,7 @@
 
     }
 
-    function load_prod(id,prod_name) {
+    function load_prod(id,pid) {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -194,12 +254,12 @@
                 //history.replaceState(null,url,tmp+'&prod='+prod_name);
 
                 document.getElementById("nave").innerHTML = '';
-                document.getElementById("nave").innerHTML = "<a onclick=\'home_page()\'>home</a>" + "<a onclick=\'load_list("+ (id-1) +")\'>   >   category "+id +"</a>" +  '  >   ' + prod_name;
+                document.getElementById("nave").innerHTML = "<a onclick=\'home_page()\'>home</a>" + "<a onclick=\'load_list("+ (id-1) +")\'>   >   category "+id +"</a>" +  '  >  product pid  ' + pid;
                 document.getElementById("prod_info").innerHTML = this.responseText;
                 document.getElementById("list").innerHTML = '';
             }
         };
-        xhttp.open("GET", "product.php?product="+prod_name +"&action=load_prod", true);
+        xhttp.open("GET", "product.php?pid="+pid +"&action=load_prod", true);
         xhttp.send();
 
 

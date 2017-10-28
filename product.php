@@ -39,6 +39,7 @@ function load_list(){
         $prices[$i] = $result[$i][price];
         $image_names[$i] = $result[$i][image_source];
         $description[$i] = $result[$i][description];
+        $pids[$i]=$result[$i][pid];
         $i = $i + 1;
     }
     $txt = '';
@@ -46,8 +47,8 @@ function load_list(){
 
     $j = 0;
     while($j < $i) {
-        $txt = $txt . '<li><a onclick=\'load_prod('.$catids[$j] .',"'. $names[$j]. '")\' ><img  src="img/' .$image_names[$j] .'"></>' . '<a onclick=\'load_prod('.$catids[$j] .',"'.$names[$j].'")\' > name :'.$names[$j]. '</a><br />' . '<a> price : '.$prices[$j]. '</a><br />'
-         . '<a><button>addToCart</button></a></li>';
+        $txt = $txt . '<li><a onclick=\'load_prod('.$catids[$j] .','. $pids[$j]. ')\' ><img  src="img/' .$image_names[$j] .'"/></a>' . '<a onclick=\'load_prod('.$catids[$j] .','.$pids[$j] .')\' > name :'.$names[$j]. '</a><br />' . '<a> price : '.$prices[$j]. '</a><br />'
+         . '<a><button id="tocart" onclick="addtocart('.$pids[$j].')">addToCart</button></a></li>';
         $j=$j+1;
     }
     echo $txt;
@@ -58,17 +59,31 @@ function load_list(){
 
 function load_prod()
 {
-    $product_name = $_REQUEST[product];
+    $product_name = $_REQUEST[pid];
     $conn_2 = new PDO('sqlite:../cart.db');
-    $q_2 = $conn_2->prepare('SELECT * FROM products where name = "' . $product_name . '" ');
+    $q_2 = $conn_2->prepare('SELECT * FROM products where pid = ' . $product_name );
     $q_2->execute();
     $result = $q_2->fetchAll(PDO::FETCH_ASSOC);
-    echo "<li>" . $product_name . "</li>";
+    echo "<li>" . $result[0][name] . "</li>";
 #var_dump($result);
 
     echo '<tr><td rowspan="4"><img src="img/' . $result[0][image_source] . '"> </img> </td><td>Item: ' . $result[0][name] . '<br /></td></tr><tr><td>price: $' . $result[0][price] . '</td></tr>'
-        . '<tr><td>description: ' . $result[0][description] . '/td></tr>' . '<tr><td><a><button>addToCart</button></a></td></tr>';
+        . '<tr><td>description: ' . $result[0][description] . '/td></tr>' . '<tr><td><a><button id="tocart" onclick="addtocart('.$product_name.')">addToCart</button></a></td></tr>';
 }
+
+
+function cart_info()
+{
+    $product_name = $_REQUEST[pid];
+    $conn_2 = new PDO('sqlite:../cart.db');
+    $q_2 = $conn_2->prepare('SELECT name , price FROM products where pid = ' . $product_name );
+    $q_2->execute();
+    $result = $q_2->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($result);
+}
+
+
+
 
 
 if ($_SERVER["REQUEST_METHOD"]=="GET") {

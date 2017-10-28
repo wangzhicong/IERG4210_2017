@@ -102,8 +102,8 @@ function ierg4210_prod_update()
 
    $conn = new PDO('sqlite:../cart.db');
     
-    $q = $conn->prepare( 'UPDATE products SET catid = '.$_POST['catid'] .', price = '.$_POST['price'].',description =\''.$_POST['description'].'\' WHERE name = \''. $item_name. '\');') ;
-
+    $q = $conn->prepare( 'UPDATE products SET catid = '.$_POST['catid'] .', price = '.$_POST['price'].' , description =\''.$_POST['description'].'\' WHERE name = \''. $item_name. '\'') ;
+    #echo 'UPDATE products SET catid = '.$_POST['catid'] .', price =\''.$_POST['price'].'\',description =\''.$_POST['description'].'\' WHERE name = \''. $item_name;
     $q->execute();#->fetcharray();
     echo "Done";
 
