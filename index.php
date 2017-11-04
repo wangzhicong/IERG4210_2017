@@ -104,7 +104,7 @@
 
 
 <nav>
-    <p id = "total"></p>
+    <p id = "total">Shopping cart</p>
     <ul id ="cart_list"></ul>
 
 
@@ -171,8 +171,10 @@
         if(parseInt(num)>0)
             localStorage.setItem(pid,(parseInt(num) - 1));
         num = localStorage.getItem(pid) ;
-        if(parseInt(num)<=0)
+        if(parseInt(num)<=0) {
             localStorage.removeItem(pid);
+            document.getElementById("total").innerHTML = "Shopping cart :  Total price = " + 0;
+        }
         //alert(localStorage.getItem(pid));
         refresh_cart();
     }
