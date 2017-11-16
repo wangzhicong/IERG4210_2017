@@ -1,8 +1,61 @@
-<!DOCTYPE html>
-<html>
-<body>
+<?php
+include_once ('csrf.php');
+session_start();
 
-<h1>My first PHP page</h1>
+function redirect($email)
+{
+    $db = new PDO('sqlite:../user.db');
+    $q = $db->prepare('SELECT * FROM users WHERE email = ?');
+    $q->execute(array($email));
+    if ($r = $q->fetch()) {
+        if ($r['admin'] == 0) {
+            //echo $r[0][admin];
+            header('Location:admin.php', true, 302);
+            //return true;
+            exit();
+        }
+        if ($r['admin'] == 1) {
+            return true;
+        }
+    }
+}
+
+
+function checksession()
+{
+    if (!empty($_SESSION['t4210'])) {
+        return $_SESSION['t4210']['em'];
+    }
+    if (!empty($_COOKIE['auth'])) {
+        if ($t = json_decode(stripcslashes($_COOKIE['auth']), true)) {
+            if (time() > $t['exp']) return false;
+            $db = new PDO('sqlite:../user.db');
+            $q = $db->prepare('SELECT * FROM users WHERE email = ?');
+            $q->execute(array($t['em']));
+            if ($r = $q->fetch()) {
+                $realk = hash_hmac('sha1', $t['exp']. $r['password'], $r['salt']);
+                if ($realk == $t['k']) {
+                    $_SESSION['t4210'] = $t;
+                    return $t['em'];
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+$result = checksession();
+if($result == false)
+{
+    header('Location:admin.php', true, 302);
+}
+else
+{
+    redirect($result);
+}
+
+?>
 
 
 
@@ -43,8 +96,8 @@ function ierg4210_prod_add()
 
         $new_name = "dummpy";
         $new_name = $conn->lastInsertId() . $_POST[image_type];
-        $q = $conn->prepare('INSERT INTO products  VALUES (null,' . $_POST[catid] . ',\'' . $_POST[name] . '\',\'' . $new_name . '\',' . $_POST[price] . ',\'' . $_POST['description'] . '\' )');
-        $q->execute();
+        $q = $conn->prepare('INSERT INTO products  VALUES (null,?,?,?,?,?)');
+        $q->execute(array($_POST[catid],$_POST[name],$new_name,$_POST[price],$_POST['description']));
         if($_FILES['myfile']['type']=="image/jpeg" )
             $new_name = $conn->lastInsertId() . ".jpg";
         elseif ($_FILES['myfile']['type']=="image/png")
@@ -52,9 +105,9 @@ function ierg4210_prod_add()
         else
             $new_name = $conn->lastInsertId() . ".gif";
 
-        $q = $conn->prepare( 'UPDATE products SET  image_source = \''.$new_name.'\' WHERE name = \''. $_POST[name]  . '\'') ;
+        $q = $conn->prepare( 'UPDATE products SET  image_source = ? WHERE name = ?') ;
 
-        $q->execute();#->fetcharray();
+        $q->execute(array($new_name,$_POST[name] ));#->fetcharray();
         #echo "here2";
         #echo $_FILES['myfile']['tmp_name'] ."<br>";
 
@@ -76,17 +129,19 @@ function ierg4210_prod_add()
 function ierg4210_prod_delete()
 {
     $item_name = $_POST['name'];
-    
- #$item_name = "apple";
+    if(!preg_match('/^[\w\- ]+$/',$_POST['name'])){
+        echo "invalid input";
+        exit();
+    }
     echo "deleting ";
     echo $item_name ."<br>";
 
 
    $conn = new PDO('sqlite:../cart.db');  
 
-    $q = $conn->prepare( 'DELETE FROM products WHERE name = \'' . $item_name .'\'' );
+    $q = $conn->prepare( 'DELETE FROM products WHERE name = ?' );
     #$q = $conn->prepare( 'SELECT name FROM categories';
-    $q->execute();#->fetcharray();
+    $q->execute(array($item_name));#->fetcharray();
     $conn = null;
     echo "........done!";
 
@@ -102,14 +157,18 @@ function ierg4210_prod_update()
 
    $conn = new PDO('sqlite:../cart.db');
     
-    $q = $conn->prepare( 'UPDATE products SET catid = '.$_POST['catid'] .', price = '.$_POST['price'].' , description =\''.$_POST['description'].'\' WHERE name = \''. $item_name. '\'') ;
+    $q = $conn->prepare( 'UPDATE products SET catid = ?, price =? , description =? WHERE name = ?') ;
     #echo 'UPDATE products SET catid = '.$_POST['catid'] .', price =\''.$_POST['price'].'\',description =\''.$_POST['description'].'\' WHERE name = \''. $item_name;
-    $q->execute();#->fetcharray();
+    $q->execute(array($_POST['catid'],$_POST['price'],$_POST['description'],$item_name));#->fetcharray();
     echo "Done";
 
 }
 function ierg4210_cat_add()
 {
+    if(!preg_match('/^[\w\- ]+$/',$_POST['name']) ){
+        echo "invalid input";
+        exit();
+    }
     echo "inserting  ".$_POST[name] . "<br>";
     $conn = new PDO('sqlite:../cart.db');
     $q = $conn->prepare('select name from categories');
@@ -124,8 +183,8 @@ function ierg4210_cat_add()
         $i +=1;
     }
 
-   $q = $conn->prepare( 'INSERT INTO categories VALUES (null,\''.$_POST['name'].'\');' );
-   $q->execute();
+   $q = $conn->prepare( 'INSERT INTO categories VALUES (null,?);' );
+   $q->execute(array($_POST['name']));
 
    echo "Done!";
 
@@ -133,20 +192,27 @@ function ierg4210_cat_add()
 }
 function ierg4210_cat_delete()
 {
+    if(!preg_match('/^[\w\- ]+$/',$_POST['name']) ){
+        echo "invalid input";
+        exit();
+    }
     $item_name = $_POST['name'];
     echo "deleting category".$item_name." <br>";
 
 
     $conn = new PDO('sqlite:../cart.db');  
     #$conn = new sqlite3($db_name);
-    $q = $conn->prepare( 'DELETE FROM categories WHERE name = \''. $item_name .'\';') ;
-    $q->execute();#->fetcharray();
+    $q = $conn->prepare( 'DELETE FROM categories WHERE name = ?') ;
+    $q->execute(array($item_name));#->fetcharray();
 
     echo "Done!";
 
 }
 function ierg4210_cat_update()
 {
+    if($_REQUEST['action']=='cat_update')
+        csrf_verfNonce($_REQUEST['action'],$_GET['nonce']);
+
     if(!preg_match('/^[\w\- ]+$/',$_POST['name']) ){
         echo "invalid input";
         exit();
@@ -157,9 +223,9 @@ function ierg4210_cat_update()
     echo "updating ".$_POST['catid']." <br>";
     echo $item_name ."updating <br>";
    $conn = new PDO('sqlite:../cart.db');
-    $q = $conn->prepare( 'UPDATE categories SET name = \''.$_POST['name']. '\' WHERE catid = '. $_POST['catid'] .' ;') ;
+    $q = $conn->prepare( 'UPDATE categories SET name = ? WHERE catid = ? ') ;
 
-   $q->execute();
+   $q->execute(array($_POST['name'],$_POST['catid']));
 
    echo "Done!";
 
@@ -167,21 +233,19 @@ function ierg4210_cat_update()
 
 
 if ($_SERVER["REQUEST_METHOD"]=="POST") {
-$function_name =  $_REQUEST['action'] ; 
-#echo $_FILES['myfile']['tmp_name'] ."<br>";
-
-#echo " processing <br> " . $_REQUEST['action'] . "    pid <br>" ;
-#echo  $_POST['catid'] . "    catid <br>" ;
-#echo  $_POST['name'] . "     name <br>" ;
-#echo  $_POST['price'] . "    price <br>" ;
-#echo  $_POST['image_name'] . "  img name   <br>" ;
-
-#echo $_FILES['myfile'] ."<br>";
-
-call_user_func($function_name );
-
+    if(empty($_REQUEST['action'])||!preg_match('/^[\w\_]+$/',$_REQUEST['action'])) {
+        echo 'undefined action';
+    }
+    echo "check csrf <br>";
+    if(!(csrf_verfNonce($_REQUEST['action'],$_POST['nonce']))){
+        echo "csrf attack";
+        exit();
+    }
+    if(($returnVal=call_user_func('ierg4210_'.$_REQUEST['action']))===false)
+    {
+        echo "false";exit();
+    }
 }
 
 ?>
-</body>
-</html>
+

@@ -1,15 +1,14 @@
 <?php
-#echo "Hello World! in php2";
-#error_reporting(E_ALL);
-function load_cat(){
+include_once('csrf.php');
+session_start();
+function loadcat(){
+
     $conn = new PDO('sqlite:../cart.db');
     $q = $conn->prepare( 'SELECT name FROM categories');
     $q->execute();
     $result= $q->fetchAll(PDO::FETCH_ASSOC);
     $txt = 'categories ';
     $i= 0;
-#var_dump($result);
-#$names=array();
     while($i < sizeof( $result) ){
         $cat_names[$i] = $result[$i][name];
         $txt = $txt . '<li onclick=\'load_list(' .$i .')\'>'.$cat_names[$i].'</li>';
@@ -19,16 +18,19 @@ function load_cat(){
     echo $txt;
 }
 
-function load_list(){
+function loadlist(){
     $catid = $_REQUEST[catid]+1;
+    $product_name = $_REQUEST[pid];
+    if(!preg_match('/^\d+$/',$catid)){
+        echo "invalid input";
+        exit();
+    }
     $conn = new PDO('sqlite:../cart.db');
-    $q = $conn->prepare( 'SELECT * FROM products where catid = '.$catid );
-    $q->execute();
+    $q = $conn->prepare( 'SELECT * FROM products where catid = ?');
+    $q->execute(array($catid));
     $result= $q->fetchAll(PDO::FETCH_ASSOC);
 
     $i=0;
-#var_dump($result);
-#$names=array();
     if(sizeof($result) == 0){
         echo '<li>This is a wrong category, please go to the home page</li>';
         exit();
@@ -57,12 +59,17 @@ function load_list(){
 
 
 
-function load_prod()
+function loadprod()
 {
+
     $product_name = $_REQUEST[pid];
+    if(!preg_match('/^\d+$/',$product_name)){
+        echo "invalid input";
+        exit();
+    }
     $conn_2 = new PDO('sqlite:../cart.db');
-    $q_2 = $conn_2->prepare('SELECT * FROM products where pid = ' . $product_name );
-    $q_2->execute();
+    $q_2 = $conn_2->prepare('SELECT * FROM products where pid = ?'  );
+    $q_2->execute(array($product_name));
     $result = $q_2->fetchAll(PDO::FETCH_ASSOC);
     echo "<li>" . $result[0][name] . "</li>";
 #var_dump($result);
@@ -72,12 +79,16 @@ function load_prod()
 }
 
 
-function cart_info()
+function cartinfo()
 {
     $product_name = $_REQUEST[pid];
+    if(!preg_match('/^\d+$/',$product_name)){
+        echo "invalid input";
+        exit();
+    }
     $conn_2 = new PDO('sqlite:../cart.db');
-    $q_2 = $conn_2->prepare('SELECT name , price FROM products where pid = ' . $product_name );
-    $q_2->execute();
+    $q_2 = $conn_2->prepare('SELECT name , price FROM products where pid = ?' );
+    $q_2->execute(array($product_name));
     $result = $q_2->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode($result);
 }
@@ -87,8 +98,20 @@ function cart_info()
 
 
 if ($_SERVER["REQUEST_METHOD"]=="GET") {
-    $function_name = $_REQUEST['action'];
-    call_user_func($function_name);
+
+    if(empty($_REQUEST['action'])||!preg_match('/^[\w]+$/',$_REQUEST['action'])) {
+        echo 'undefined action';
+    }
+
+    if(!(csrf_verfNonce($_REQUEST['action'],$_GET['nonce']))){
+        echo "csrf attack";
+        exit();
+    }
+
+    if(($returnVal=call_user_func($_REQUEST['action']))===false)
+    {
+        echo "false";exit();
+    }
 
 }
 

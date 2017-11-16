@@ -1,6 +1,9 @@
 <!doctype html>
 
-
+<?php
+include_once('csrf.php');
+session_start();
+?>
 
 <style>
     ul.table{width:80%;height:100%;
@@ -76,7 +79,7 @@
         left:30%;
         top:0%;}
     footer.foot {position:fixed;
-        left:10%;bottom:0%;width:80%;height:60px;background-color: #888888;}
+        left:10%;bottom:0%;width:80%;height:100px;background-color: #888888;}
     body {background:url("img/background.jpeg");background-size:100%; z-index: 0;}
     h3 {color: white;}
 </style>
@@ -114,7 +117,11 @@
 
 </table>
 
-<footer class="foot">more info</footer>
+<footer class="foot" >
+    <p id="user_name">Hello! <?php if(isset($_SESSION['t4210']['em'])) echo $_SESSION['t4210']['em']; else echo "Guest!";?></p>
+    <button onclick="logout()">Logout</button>
+    <button onclick="login()">Login</button>
+</footer>
 
 
 
@@ -154,7 +161,7 @@
                     document.getElementById("total").innerHTML = "Shopping cart :  Total price = " + total_price;
                 }
             };
-            xhttp.open("GET", "product.php?pid="+pid +"&action=cart_info", false);
+            xhttp.open("GET", "product.php?pid="+pid +"&action=cartinfo&nonce="+<?php echo getNonce('cartinfo')?>, false);
             xhttp.send();
 
             //alert('reach here');
@@ -211,7 +218,7 @@
                 document.getElementById("list").innerHTML = '';
             }
         };
-        xhttp.open("GET", "product.php?action=load_cat", true);
+        xhttp.open("GET", "product.php?action=loadcat&nonce="+<?php echo getNonce('loadcat')?>, true);
         xhttp.send();
 
 
@@ -240,7 +247,7 @@
 
             }
         };
-        xhttp.open("GET", "product.php?catid="+id+"&action=load_list", true);
+        xhttp.open("GET", "product.php?catid="+id+"&action=loadlist&nonce="+<?php echo getNonce('loadlist')?>, true);
         xhttp.send();
 
 
@@ -250,18 +257,13 @@
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                //window.location.href = url + '?catid='+(id+1)+'&prod='+prod_name;
-                //var url = window.location.href;
-                //var tmp = url.replace(/&prod=[\w\-\s]*/gi,"");
-                //history.replaceState(null,url,tmp+'&prod='+prod_name);
-
                 document.getElementById("nave").innerHTML = '';
                 document.getElementById("nave").innerHTML = "<a onclick=\'home_page()\'>home</a>" + "<a onclick=\'load_list("+ (id-1) +")\'>   >   category "+id +"</a>" +  '  >  product pid  ' + pid;
                 document.getElementById("prod_info").innerHTML = this.responseText;
                 document.getElementById("list").innerHTML = '';
             }
         };
-        xhttp.open("GET", "product.php?pid="+pid +"&action=load_prod", true);
+        xhttp.open("GET", "product.php?pid="+pid +"&action=loadprod&nonce="+<?php echo getNonce('loadprod')?>, true);
         xhttp.send();
 
 
@@ -283,6 +285,24 @@
             return;
         //alert(theRequest['catid']);
 
+    }
+
+
+    function logout() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("user_name").innerHTML ="Hello! Guest!";
+            }
+        };
+        xhttp.open("GET", "auth-process.php?action=logout&nonce="+<?php echo getNonce('logout')?>, true);
+        xhttp.send();
+
+
+    }
+
+    function login() {
+        self.location='admin.php';
     }
 
 
