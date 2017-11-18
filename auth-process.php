@@ -47,8 +47,10 @@ function ierg4210_login()
 {
     $email = $_GET['em'];
     $password = $_GET['password'];
-//echo $email;
-//echo $password;
+    if(!preg_match('/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+$/',$email)|| !preg_match('/^[\d]+$/',$password) ){
+        echo "invalid input";
+        exit();
+    }
 
     $conn = new PDO('sqlite:../user.db');
     $q = $conn->prepare('SELECT * FROM users WHERE email = ?;');
