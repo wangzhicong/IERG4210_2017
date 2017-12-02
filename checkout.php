@@ -13,14 +13,8 @@ if(!(csrf_verfNonce('checkout',$_GET['nonce']))){
 $data=$_GET[data];
 
 $out = explode("-",$data);
-$user = $_GET['user'];
-
-
-$conn_2 = new PDO('sqlite:../user.db');
-$q_2 = $conn_2->prepare('SELECT * FROM users where email = ?');
-$q_2->execute(array($user));
-$result = $q_2->fetch(PDO::FETCH_ASSOC);
-$em = $result['paymail'];
+$em = $_GET['em'];
+$user= $_GET['user'];
 
 //echo $em;
 
@@ -50,12 +44,12 @@ $conn = new PDO('sqlite:../order.db');
 
 $q = $conn->prepare('insert into orders  values (null,?,?,?,?,?,?)');
 //$q->execute(array($_POST[catid],$_POST[name],$new_name,$_POST[price],$_POST['description']));
-$q->execute(array($digest,$salt,'empty',$em,$currency,$total));
+$q->execute(array($digest,$salt,'empty',$user,$currency,$hash_info));
 $last= $conn->lastInsertId();
 $last +=100;
 $conn=null;
 
-echo json_encode(array('custom'=>$digest,'invoice'=>$last,'hash_info'=>$hash_info,'email'=>$em));
+echo json_encode(array('custom'=>$digest,'invoice'=>$last,'hash_info'=>$hash_info,'email'=>$user));
 
 
 

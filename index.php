@@ -116,11 +116,15 @@ session_start();
     <p id="user_name"><?php if(isset($_SESSION['t4210']['em'])) echo $_SESSION['t4210']['em']; else echo "Guest";?></p>
     <button onclick="logout()">Logout</button>
     <button onclick="login()">Login</button>
+    <button onclick="buyer()">Buyer Portal</button>
 </footer>
 
 
 
 <script>
+    function buyer(){
+        self.location="user-portal.php";
+    }
 
     function addtocart(pid){
         //alert('add to cart action');
@@ -159,11 +163,7 @@ session_start();
             xhttp.open("GET", "product.php?pid="+pid +"&action=cartinfo&nonce="+<?php echo getNonce('cartinfo')?>, false);
             xhttp.send();
 
-            //alert('reach here');
-
-            // <li>item3   $33<input id="num_3" name="num_3" placeholder="1"></li>  <button onclick="addtocart()">addToCart</button>
         }
-        //document.getElementById("cart_list").innerHTML = cart_info;
         document.getElementById("cart_list").innerHTML = document.getElementById("cart_list").innerHTML + '<button onclick="myFunction()">pay</button>';
 
 
@@ -292,8 +292,6 @@ session_start();
         };
         xhttp.open("GET", "auth-process.php?action=logout&nonce="+<?php echo getNonce('logout')?>, true);
         xhttp.send();
-
-
     }
 
     function login() {
@@ -302,16 +300,24 @@ session_start();
 
     function myFunction()
     {
+
+
+
         //alert('before');
         //transfer pids and nums
-        if(document.getElementById("user_name").innerHTML == "Guest")
+
+
+        var em = document.getElementById("user_name").innerHTML;
+
+        if(em == "Guest")
         {
-            alert("please login first!");
+            alert('please login first');
             return false;
         }
 
         //alert(em);
-
+        var email=document.getElementById("m-em").value;
+        //alert(email);
         var temp='';
         var jsonString = JSON.stringify(localStorage);
         //alert(jsonString.toString());
@@ -326,7 +332,7 @@ session_start();
             var pid = parseInt(localStorage.key(i));
             temp+="-"+pid + "-"+ parseInt(localStorage.getItem(pid));
         }
-        var email=document.getElementById("user_name").innerHTML;
+
         //alert(email);
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -379,10 +385,9 @@ session_start();
 
                 localStorage.clear();
                 document.getElementById("form").submit();
-
             }
         };
-        xhttp.open("GET", "checkout.php?data="+ temp+"&user="+email+"&nonce="+<?php echo getNonce('checkout')?>, true);
+        xhttp.open("GET", "checkout.php?data="+ temp+"&em="+email+"&user="+em+"&nonce="+<?php echo getNonce('checkout')?>, true);
         xhttp.send();
 
 
@@ -406,7 +411,6 @@ session_start();
 </nav>
 
 <form method="POST"  id="form" action="https://www.sandbox.paypal.com/cgi-bin/webscr"  >
-
     <input type="hidden" name="cmd" value="_cart" >
     <input type="hidden" name="upload" value="1" >
     <input id="m-em" type="hidden" name="business" value="wangzhc08-facilitator@gmail.com" >

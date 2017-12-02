@@ -55,7 +55,7 @@ else {
             $currency = $_POST['mc_currency'];
             $txn_id = $_POST['txn_id'];
 
-            $em = $_POST['payer_email'];
+            $em = $_POST['business'];
 
             //error_log($total, 0);
             //error_log($currency, 0);
