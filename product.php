@@ -10,7 +10,7 @@ function loadcat(){
     $txt = 'categories ';
     $i= 0;
     while($i < sizeof( $result) ){
-        $cat_names[$i] = $result[$i][name];
+        $cat_names[$i] = $result[$i]['name'];
         $txt = $txt . '<li onclick=\'load_list(' .$i .')\'>'.$cat_names[$i].'</li>';
         $i =$i +1;
     }
@@ -19,8 +19,8 @@ function loadcat(){
 }
 
 function loadlist(){
-    $catid = $_REQUEST[catid]+1;
-    $product_name = $_REQUEST[pid];
+    $catid = $_REQUEST['catid']+1;
+   // $product_name = $_REQUEST['pid'];
     if(!preg_match('/^\d+$/',$catid)){
         echo "invalid input";
         exit();
@@ -62,7 +62,7 @@ function loadlist(){
 function loadprod()
 {
 
-    $product_name = $_REQUEST[pid];
+    $product_name = $_REQUEST['pid'];
     if(!preg_match('/^\d+$/',$product_name)){
         echo "invalid input";
         exit();
@@ -71,17 +71,17 @@ function loadprod()
     $q_2 = $conn_2->prepare('SELECT * FROM products where pid = ?'  );
     $q_2->execute(array($product_name));
     $result = $q_2->fetchAll(PDO::FETCH_ASSOC);
-    echo "<li>" . $result[0][name] . "</li>";
+    echo "<li>" . $result[0]['name'] . "</li>";
 #var_dump($result);
 
-    echo '<tr><td rowspan="4"><img src="img/' . $result[0][image_source] . '"> </img> </td><td>Item: ' . $result[0][name] . '<br /></td></tr><tr><td>price: $' . $result[0][price] . '</td></tr>'
-        . '<tr><td>description: ' . $result[0][description] . '/td></tr>' . '<tr><td><a><button id="tocart" onclick="addtocart('.$product_name.')">addToCart</button></a></td></tr>';
+    echo '<tr><td rowspan="4"><img src="img/' . $result[0]['image'] . '"> </img> </td><td>Item: ' . $result[0]['name'] . '<br /></td></tr><tr><td>price: $' . $result[0]['price'] . '</td></tr>'
+        . '<tr><td>description: ' . $result[0]['description'] . '/td></tr>' . '<tr><td><a><button id="tocart" onclick="addtocart('.$product_name.')">addToCart</button></a></td></tr>';
 }
 
 
 function cartinfo()
 {
-    $product_name = $_REQUEST[pid];
+    $product_name = $_REQUEST['pid'];
     if(!preg_match('/^\d+$/',$product_name)){
         echo "invalid input";
         exit();

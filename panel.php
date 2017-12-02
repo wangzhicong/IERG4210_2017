@@ -84,7 +84,7 @@ else
             /></div>
 
         <label for="prod_price">Price *</label>
-        <div><input id="prod_price_" type="price" name="price" required="true" pattern="^[\d]+\.\d\d$"
+        <div><input id="prod_price_" type="price" name="price" required="true" pattern="^[\d]+$"
             /></div>
 
         <label for="prod_name">Discription *</label>
@@ -154,7 +154,7 @@ else
 
 
         <label for="prod_price">New Price *</label>
-        <div><input id="prod_price" type="text" name="price" required="true" pattern="^[\d]+\.\d\d$"
+        <div><input id="prod_price" type="text" name="price" required="true" pattern="^[\d]+$"
             /></div>
 
         <label for="prod_name">Discription *</label>
@@ -236,3 +236,46 @@ else
         <input type="submit" value="Submit" />
     </form>
 </fieldset>
+
+
+
+
+
+
+
+
+<table border="0">
+    <tr>
+        <th>Oid</th>
+        <th>Email</th>
+        <th>Tid</th>
+        <th>Salt</th>
+    </tr>
+    <?php
+    $db_name = '../order.db';
+    $conn = new sqlite3($db_name);
+    $sql = 'SELECT * FROM orders';
+    $result = $conn->query($sql);
+    while($row = $result->fetchArray(SQLITE3_ASSOC) ){
+        echo "<tr>";
+        echo "<th>" . $row[oid] ."</th>";
+        echo "<th>" . $row[digest] ."</th>";
+        echo "<th>" . $row[tid] ."</th>";
+        echo "<th>" . $row[salt] ."</th>";
+        echo "</tr>";
+    }
+    $conn->close();
+    ?>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+

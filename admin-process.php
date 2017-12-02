@@ -68,7 +68,7 @@ else
 function ierg4210_prod_add()
 {
     $conn = new PDO('sqlite:../cart.db');
-    if(!preg_match('/^[\w\- ]+$/',$_POST['name'])|| !preg_match('/^[\d]+\.\d\d$/',$_POST['price'])||!preg_match('/^[\w\- ]+$/',$_POST['description']) ){
+    if(!preg_match('/^[\w\- ]+$/',$_POST['name'])|| !preg_match('/^[\d]+$/',$_POST['price'])||!preg_match('/^[\w\- ]+$/',$_POST['description']) ){
         echo "invalid input";
         exit();
     }
@@ -148,7 +148,7 @@ function ierg4210_prod_delete()
 }
 function ierg4210_prod_update()
 {
-    if(!preg_match('/^[\w\- ]+$/',$_POST['name'])|| !preg_match('/^[\d]+\.\d\d$/',$_POST['price'])||!preg_match('/^[\w\- ]+$/',$_POST['description']) ){
+    if(!preg_match('/^[\w\- ]+$/',$_POST['name'])|| !preg_match('/^[\d]+$/',$_POST['price'])||!preg_match('/^[\w\- ]+$/',$_POST['description']) ){
         echo "invalid input";
         exit();
     }

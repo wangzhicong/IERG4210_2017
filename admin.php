@@ -12,10 +12,9 @@ session_start();
         <div><input id="email" name="em" required="true" pattern="^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+""/></div>
 
         <label for="prod_price">password *</label>
-        <div><input id="password" name="password" required="true" pattern="^[\d]+$" /></div>
+        <div><input id="password" name="password" type="password" required="true" pattern="^[\d]+$" /></div>
         <input  id="nonce" type="hidden" name = "action" value="login"/>
         <input  id="nonce" type="hidden" name = "nonce" value="<?php echo getNonce('login');?>"/>
 
         <input type="submit" value="Login"/>
     </form>
-</fieldset>
