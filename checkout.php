@@ -49,7 +49,7 @@ $last= $conn->lastInsertId();
 $last +=100;
 $conn=null;
 
-echo json_encode(array('custom'=>$digest,'invoice'=>$last,'hash_info'=>$hash_info,'email'=>$user));
+echo json_encode(array('custom'=>htmlspecialchars($digest),'invoice'=>htmlspecialchars($last),'hash_info'=>htmlspecialchars($hash_info),'email'=>htmlspecialchars($user)));
 
 
 

@@ -48,6 +48,11 @@ else {
             error_log($res, 0);
             if (empty($_POST['payment_status']) || $_POST['payment_status'] != 'Completed') {
                 error_log("payment not completed", 0);
+                exit();
+            }
+            if ($_POST['txn_type'] != 'cart') {
+                error_log("not cart", 0);
+                exit();
             }
 
 

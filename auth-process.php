@@ -28,7 +28,35 @@ return false;
 include_once('csrf.php');
 session_start();
 
+function checksession()
+{
+    if (!empty($_SESSION['t4210'])) {
+        return $_SESSION['t4210']['em'];
+    }
+    if (!empty($_COOKIE['auth'])) {
+        if ($t = json_decode(stripcslashes($_COOKIE['auth']), true)) {
+            if (time() > $t['exp']) return false;
+            $db = new PDO('sqlite:../user.db');
+            $q = $db->prepare('SELECT * FROM users WHERE email = ?');
+            $q->execute(array($t['em']));
+            if ($r = $q->fetch()) {
+                $realk = hash_hmac('sha1', $t['exp']. $r['password'], $r['salt']);
+                if ($realk == $t['k']) {
+                    $_SESSION['t4210'] = $t;
+                    return $t['em'];
+                }
+            }
+        }
+    }
+    return false;
+}
 
+
+$result = checksession();
+if($result == false)
+{
+    header('Location:admin.php', true, 302);
+}
 
     if(empty($_REQUEST['action'])||!preg_match('/^\w+$/',$_REQUEST['action']))
     {
