@@ -248,6 +248,7 @@ else
     <tr>
         <th>Oid</th>
         <th>Email</th>
+        <th>Digest</th>
         <th>Tid</th>
         <th>Salt</th>
     </tr>
@@ -259,6 +260,7 @@ else
     while($row = $result->fetchArray(SQLITE3_ASSOC) ){
         echo "<tr>";
         echo "<th>" . $row[oid] ."</th>";
+        echo "<th>" . $row[email] ."</th>";
         echo "<th>" . $row[digest] ."</th>";
         echo "<th>" . $row[tid] ."</th>";
         echo "<th>" . $row[salt] ."</th>";

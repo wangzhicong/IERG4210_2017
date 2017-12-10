@@ -6,7 +6,7 @@ session_start();
 
 <fieldset>
     <legend>Login</legend>
-    <form id="form" method="GET" action="auth-process.php" enctype="multipart/form-data">
+    <form method="Post" action="auth-process.php" enctype="multipart/form-data">
 
         <label for="prod_name">Email *</label>
         <div><input id="email" name="em" required="true" pattern="^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+""/></div>
@@ -24,20 +24,16 @@ session_start();
 
 <fieldset>
     <legend>Sign up</legend>
-    <form id="form" method="GET" action="auth-process.php" enctype="multipart/form-data">
+    <form id="form" method="POST" action="auth-process.php" enctype="multipart/form-data">
 
-        <label for="prod_name">Email *</label>
+        <label>Email *</label>
         <div><input id="email" name="em" required="true" pattern="^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+"/></div>
 
-        <label for="prod_price">Password *</label>
-        <div><input id="password" name="password" type="password" required="true" pattern="^[\d]+$" /></div>
+        <label>Password *</label>
+        <div><input id="password_0" name="password" type="password" required="true" pattern="^[\d]+$" /></div>
 
-        <label for="prod_price">Repeat Password *</label>
+        <label>Repeat Password *</label>
         <div><input id="password_1" name="password_1" type="password" required="true" pattern="^[\d]+$" /></div>
-
-        <label for="prod_price">Paypal email *</label>
-        <div><input name="paymail" required="true" pattern="^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+" /></div>
-
 
 
         <input  id="nonce" type="hidden" name = "action" value="signup"/>
@@ -45,12 +41,14 @@ session_start();
 
 
     </form>
-    <button onclick="login()">Sign Up</button>
+    <button onclick="signin()">Sign Up</button>
 </fieldset>
 <script>
-    function login(){
-        var pass=document.getElementById("password").value;
+    function signin(){
+        var pass=document.getElementById("password_0").value;
         var pass_1=document.getElementById("password_1").value;
+        alert(pass);
+        alert(pass_1);
         if(pass !== pass_1){
             alert("The passward are not the same!");
             return false;

@@ -3,101 +3,100 @@
 include_once('csrf.php');
 session_start();
 
+
+function redirect($email)
+{
+    $db = new PDO('sqlite:../user.db');
+    $q = $db->prepare('SELECT * FROM users WHERE email = ?');
+    $q->execute(array($email));
+    if ($r = $q->fetch()) {
+        if ($r['admin'] == 0) {
+            //echo $r[0][admin];
+            header('Location:admin.php', true, 302);
+            //return true;
+            exit();
+        }
+        if ($r['admin'] == 1) {
+            return true;
+        }
+    }
+}
+
+
+function checksession()
+{
+    if (!empty($_SESSION['t4210'])) {
+        return $_SESSION['t4210']['em'];
+    }
+    if (!empty($_COOKIE['auth'])) {
+        if ($t = json_decode(stripcslashes($_COOKIE['auth']), true)) {
+            if (time() > $t['exp']) return false;
+            $db = new PDO('sqlite:../user.db');
+            $q = $db->prepare('SELECT * FROM users WHERE email = ?');
+            $q->execute(array($t['em']));
+            if ($r = $q->fetch()) {
+                $realk = hash_hmac('sha1', $t['exp']. $r['password'], $r['salt']);
+                if ($realk == $t['k']) {
+                    $_SESSION['t4210'] = $t;
+                    return $t['em'];
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
+$result = checksession();
+if($result == false)
+{
+    header('Location:admin.php', true, 302);
+}
+
+
 ?>
 
 <h1>Hello! This is buyer portal</h1>
 <h2 id="user_name"><?php if(isset($_SESSION['t4210']['em'])) echo $_SESSION['t4210']['em']; else echo "Guest";?></h2>
-
-
-
-<fieldset>
-    <legend>Login</legend>
-    <form id="form" method="GET" action="auth-process.php" enctype="multipart/form-data">
-
-        <label for="prod_name">Email *</label>
-        <div><input id="email" name="em" required="true" pattern="^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+""/></div>
-
-        <label for="prod_price">password *</label>
-        <div><input id="password" name="password" type="password" required="true" pattern="^[\d]+$" /></div>
-        <input  id="nonce" type="hidden" name = "action" value="login"/>
-        <input  id="nonce" type="hidden" name = "nonce" value="<?php echo getNonce('login');?>"/>
-
-        <input type="submit" value="Login"/>
-    </form>
-
-</fieldset>
+<a href="index.php">Back</a>
 
 <fieldset>
-    <legend>Logout</legend>
-<button onclick="logout()">Logout</button>
-</fieldset>
-
-<fieldset>
-    <legend>Sign up</legend>
-    <form id="form" method="GET" action="auth-process.php" enctype="multipart/form-data">
-
-        <label for="prod_name">Email *</label>
-        <div><input id="email" name="em" required="true" pattern="^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+"/></div>
-
-        <label for="prod_price">Password *</label>
-        <div><input id="password" name="password" type="password" required="true" pattern="^[\d]+$" /></div>
-
-        <label for="prod_price">Repeat Password *</label>
-        <div><input id="password_1" name="password_1" type="password" required="true" pattern="^[\d]+$" /></div>
-
-        <label for="prod_price">Paypal email *</label>
-        <div><input name="paymail" required="true" pattern="^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+" /></div>
+    <legend>Change passward</legend>
+    <form id="change" method="POST" action="auth-process.php" enctype="multipart/form-data">
 
 
 
-        <input  id="nonce" type="hidden" name = "action" value="signup"/>
-        <input  id="nonce" type="hidden" name = "nonce" value="<?php echo getNonce('signup');?>"/>
+        <label>Origin Password *</label>
+        <div><input id="origin" name="origin" type="password" required="true" pattern="^[\d]+$" /></div>
+
+        <label>Password *</label>
+        <div><input id="password_0_1" name="password" type="password" required="true" pattern="^[\d]+$" /></div>
+
+        <label>Repeat Password *</label>
+        <div><input id="password_1_1" name="password_1" type="password" required="true" pattern="^[\d]+$" /></div>
+
+        <input  type="hidden" name = "em" value="<?php if(isset($_SESSION['t4210']['em'])) echo $_SESSION['t4210']['em']; else echo "Guest";?>"/>
+        <input  id="nonce" type="hidden" name = "action" value="change"/>
+        <input  id="nonce" type="hidden" name = "nonce" value="<?php echo getNonce('change');?>"/>
 
 
     </form>
-    <button onclick="signin()">Sign Up</button>
+    <button onclick="change()">Change</button>
 </fieldset>
+
+
 
 <script>
-    function logout() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("user_name").innerHTML ="Guest";
-            }
-        };
-        xhttp.open("GET", "auth-process.php?action=logout&nonce="+<?php echo getNonce('logout')?>, true);
-        xhttp.send();
-    }
-
-
-    function signin(){
-        var pass=document.getElementById("password").value;
-        var pass_1=document.getElementById("password_1").value;
+    function change(){
+        var pass=document.getElementById("password_0_1").value;
+        var pass_1=document.getElementById("password_1_1").value;
         if(pass !== pass_1){
-            alert("The passward are not the same!");
+            alert("The new passward are not the same!");
             return false;
         }
-        document.getElementById("form").submit();
+        document.getElementById("change").submit();
     }
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -107,7 +106,7 @@ session_start();
     <?php
     $user = $_SESSION['t4210']['em'];
     $conn_2 = new PDO('sqlite:../order.db');
-    $q_2 = $conn_2->prepare('SELECT * FROM orders where email = ?  order by oid desc limit 0,5');
+    $q_2 = $conn_2->prepare('SELECT * FROM orders where email = ? and tid != "empty" order by oid desc limit 0,5');
     $q_2->execute(array($user));
     $result=$q_2->fetchAll();
     for($j=0;$j<sizeof($result);$j++ ){

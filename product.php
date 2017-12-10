@@ -72,9 +72,8 @@ function loadprod()
     $q_2->execute(array($product_name));
     $result = $q_2->fetchAll(PDO::FETCH_ASSOC);
     echo "<li>" . $result[0]['name'] . "</li>";
-#var_dump($result);
 
-    echo '<tr><td rowspan="4"><img src="img/' . $result[0]['image'] . '"> </img> </td><td>Item: ' . $result[0]['name'] . '<br /></td></tr><tr><td>price: $' . $result[0]['price'] . '</td></tr>'
+    echo '<tr><td rowspan="4"><img src="img/' . $result[0]['image_source'] . '"></td><td>Item: ' . $result[0]['name'] . '<br /></td></tr><tr><td>price: $' . $result[0]['price'] . '</td></tr>'
         . '<tr><td>description: ' . $result[0]['description'] . '/td></tr>' . '<tr><td><a><button id="tocart" onclick="addtocart('.$product_name.')">addToCart</button></a></td></tr>';
 }
 

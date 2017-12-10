@@ -24,15 +24,31 @@ if(!empty( $_COOKIE['t4210']))
 }
 return false;
 */
+
 include_once('csrf.php');
 session_start();
+
+
 
     if(empty($_REQUEST['action'])||!preg_match('/^\w+$/',$_REQUEST['action']))
     {
         echo 'undefined action';
         exit();
     }
-    if(!(csrf_verfNonce($_REQUEST['action'],$_GET['nonce']))){
+    if($_REQUEST['action']=='logout')
+    {
+        if(!(csrf_verfNonce($_REQUEST['action'],$_GET['nonce']))){
+            echo "csrf attack";
+            exit();
+        }
+        if(($returnVal=call_user_func('ierg4210_'.$_REQUEST['action']))===false)
+        {
+            echo "failed";exit();
+        }
+    }
+
+
+    if(!(csrf_verfNonce($_REQUEST['action'],$_POST['nonce']))){
         echo "csrf attack";
         exit();
     }
@@ -45,8 +61,8 @@ session_start();
 
 function ierg4210_login()
 {
-    $email = $_GET['em'];
-    $password = $_GET['password'];
+    $email = $_POST['em'];
+    $password = $_POST['password'];
     if(!preg_match('/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+$/',$email)|| !preg_match('/^[\d]+$/',$password) ){
         echo "invalid input";
         exit();
@@ -75,7 +91,7 @@ function ierg4210_login()
             'k' => hash_hmac('sha1', $exp . $r[0]['password'], $r[0]['salt'])
         );
 
-        setcookie('auth', json_encode($token), $exp, '', '', false, true);
+        setcookie('auth', json_encode($token), $exp, '', '', true, true);
         $_SESSION['t4210'] = $token;
 
 
@@ -84,7 +100,7 @@ function ierg4210_login()
         echo $r[0][admin];
         if ($r[0][admin] == 0) {
             //echo $r[0][admin];
-            header('Location:index.php?catid=1', true, 302);
+            header('Location:/', true, 302);
             //return true;
             exit();
         }
@@ -115,8 +131,65 @@ function ierg4210_logout()
 
 
 
+function ierg4210_signup()
+{
+    $email=$_POST[em];
+    $pwd=$_POST[password];
+    //echo $email.$pwd;
+    if(!preg_match('/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+$/',$email)|| !preg_match('/^[\d]+$/',$pwd) ){
+        echo "invalid input";
+        exit();
+    }
+    $salt=mt_rand();
+    $salted_pwd=hash_hmac('sha1', $pwd, $salt);
+
+    $conn = new PDO('sqlite:../user.db');
+    $q = $conn->prepare( 'INSERT INTO users VALUES (null,?,?,0,?,null,null);' );
+    $q->execute(array($email,$salted_pwd,$salt));
+
+    echo "Done!";
 
 
+}
+
+function ierg4210_change()
+{
+    $email=$_POST[em];
+    $origin= $_POST[origin];
+    $new_one=$_POST[password];
+    if(!preg_match('/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+$/',$email)|| !preg_match('/^[\d]+$/',$origin)|| !preg_match('/^[\d]+$/',$new_one) ){
+        echo "invalid input";
+        exit();
+    }
+
+
+    $conn = new PDO('sqlite:../user.db');
+    $q = $conn->prepare('SELECT * FROM users WHERE email = ?;');
+
+
+    $q->execute(array($email));
+    $r = $q->fetchAll(PDO::FETCH_ASSOC);
+    if($r==null){
+        echo "NO such user";
+        exit();
+    }
+    $saltPassword = hash_hmac('sha1', $origin, $r[0]['salt']);
+    if ($r[0][password] == $saltPassword) {
+        if($r[0][admin]==1)
+        {
+            echo "cannot change admin password";
+            exit();
+        }
+        $newsaltPassword = hash_hmac('sha1', $new_one, $r[0]['salt']);
+        $conn = new PDO('sqlite:../user.db');
+        $q = $conn->prepare('UPDATE users SET password=? WHERE email= ?');
+        $q->execute(array($newsaltPassword,$email));
+        ierg4210_logout();
+
+    }
+
+
+}
 
 
 

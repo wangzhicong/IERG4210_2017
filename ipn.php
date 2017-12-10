@@ -70,10 +70,10 @@ else {
                 $item_name = $_POST['item_name'.$temp];
                 $item_number = $_POST['quantity'.$temp];
                 $item_price = $_POST['mc_gross_'.$temp];
-                //error_log($item_name, 0);
-               // error_log($item_number, 0);
-                //error_log($item_price, 0);
-                $hash_info .=$item_name."-".$item_number."-". (int)$item_price."-";
+                error_log($item_name, 0);
+                error_log($item_number, 0);
+                error_log($item_price, 0);
+                $hash_info .=$item_name."-".(int)$item_number."-". (int)($item_price/$item_number)."-";
                 $temp =$temp+1;
             }
             //error_log($hash_info, 0);
@@ -94,7 +94,8 @@ else {
                 //error_log("return salt ".$orders[0]['salt'], 0);
 
                 $digest = hash_hmac('sha1', $currency .$em .$hash_info .(int)$total , $orders[0]['salt']);
-                //error_log("return salt ".$orders[0]['digest']  . "  ". $digest, 0);
+                error_log($hash_info, 0);
+                error_log($orders[0]['total'], 0);
                 if ($digest == $orders[0]['digest']) {
                     error_log("success order ".$oid, 0);
                     $q = $conn->prepare('update orders set tid=? where oid=?');

@@ -6,7 +6,7 @@ session_start();
 ?>
 
 <style>
-    ul.table{width:80%;height:100%;
+    ul.table{width:60%;height:100%;
         margin:0;padding:0;list-style:none;
         overflow:auto}
     ul.table{
@@ -57,6 +57,22 @@ session_start();
         left: 0%;
         top: 395px;
     }
+
+
+    .cats2 a:link{color:white;}
+    .cats2 a:hover{font-weight:bold}
+    .cats2 a:visited{color:yellow;}
+    .cats2
+    {
+        width: 200px;
+        color: white;
+        background-color: white;
+        position: absolute;
+        right: 0%;
+        top: 350px;
+    }
+
+
 </style>
 <style>
     h3 {
@@ -94,8 +110,8 @@ session_start();
 
     }
 </style>
-
-<body   onload="load_cats();GetRequest();refresh_cart()"></body>
+<!--GetRequest();-->
+<body   onload="load_cats();refresh_cart()"></body>
 
 <h1 class="title" id="demo"><img src="img/three%20bros.gif">wangzhicong's weapon store</h1>
 <h3 id="nave">
@@ -104,19 +120,22 @@ session_start();
 
 <ul class="cats" id ="cat_list" ></ul>
 <ul class="table" id="list"></ul>
+<ul class="cats2">
+
+    <div class="fb-page" data-href="https://www.facebook.com/facebook" data-tabs="timeline" data-width="300" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/facebook" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/facebook">Facebook</a></blockquote></div>
+</ul>
 
 
 
+<table id="prod_info"></table>
 
-<table id="prod_info">
-
-</table>
 
 <footer class="foot" >
     <p id="user_name"><?php if(isset($_SESSION['t4210']['em'])) echo $_SESSION['t4210']['em']; else echo "Guest";?></p>
     <button onclick="logout()">Logout</button>
     <button onclick="login()">Login</button>
     <button onclick="buyer()">Buyer Portal</button>
+
 </footer>
 
 
@@ -197,10 +216,10 @@ session_start();
         var url = window.location.href;
 
 
-        var tmp = url.replace(/\?catid=[%20]*[\d]/gi,"");
+       // var tmp = url.replace(/\?catid=[%20]*[\d]/gi,"");
 
 
-        history.replaceState(null,url,tmp);
+        //history.replaceState(null,url,tmp);
     }
 
     function load_cats() {
@@ -229,8 +248,8 @@ session_start();
                 var url = window.location.href;
 
                 //var tmp = url.replace(/&prod=[\w\-\s]*/gi,"");
-                var tmp = url.replace(/\?catid=[%20]*[\d]*/gi,"");
-                history.replaceState(null,url,tmp+'?catid='+(id+1));
+                //var tmp = url.replace(/\?catid=[%20]*[\d]*/gi,"");
+                //history.replaceState(null,url,tmp+'?catid='+(id+1));
 
 
                 //location.href = '?catid='+(id+1);
@@ -264,7 +283,7 @@ session_start();
 
     }
 
-
+/*
     function GetRequest() {
         var url = location.search; //获取url中"?"符后的字串
         var theRequest = new Object();
@@ -274,15 +293,16 @@ session_start();
             for(var i = 0; i < strs.length; i ++) {
                 theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
             }
+
             load_list(theRequest['catid']-1);
         }
         else
-            return;
+            return false;
         //alert(theRequest['catid']);
 
     }
 
-
+*/
     function logout() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -308,13 +328,13 @@ session_start();
 
 
         var em = document.getElementById("user_name").innerHTML;
-
+/*
         if(em == "Guest")
         {
             alert('please login first');
             return false;
         }
-
+*/
         //alert(em);
         var email=document.getElementById("m-em").value;
         //alert(email);
@@ -404,6 +424,18 @@ session_start();
 
 
 </script>
+
+
+<script>(function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = 'https://connect.facebook.net/zh_CN/sdk.js#xfbml=1&version=v2.11';
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+
+
+
 <nav>
     <p id = "total">Shopping cart</p>
     <ul id ="cart_list"></ul>
@@ -419,3 +451,4 @@ session_start();
     <input id="custom" type="hidden" name="custom" value="0" >
     <input id="invoice" type="hidden" name="invoice" value="0" >
 </form>
+

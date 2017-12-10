@@ -232,6 +232,34 @@ function ierg4210_cat_update()
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 if ($_SERVER["REQUEST_METHOD"]=="POST") {
     if(empty($_REQUEST['action'])||!preg_match('/^[\w\_]+$/',$_REQUEST['action'])) {
         echo 'undefined action';
