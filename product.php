@@ -7,15 +7,14 @@ function loadcat(){
     $q = $conn->prepare( 'SELECT name FROM categories');
     $q->execute();
     $result= $q->fetchAll(PDO::FETCH_ASSOC);
-    $txt = 'categories ';
     $i= 0;
     while($i < sizeof( $result) ){
-        $cat_names[$i] = $result[$i]['name'];
-        $txt = $txt . '<li onclick=\'load_list(' .htmlspecialchars($i) .')\'>'.htmlspecialchars($cat_names[$i]).'</li>';
+        $result[$i]['name'] = htmlspecialchars($result[$i]['name']);
         $i =$i +1;
     }
     $conn=null;
-    echo $txt;
+
+    echo json_encode($result);
 }
 
 function loadlist(){
@@ -36,26 +35,17 @@ function loadlist(){
         exit();
     }
     while($i < sizeof( $result) ){
-        $names[$i] = $result[$i][name];
-        $catids[$i] = $result[$i][catid];
-        $prices[$i] = $result[$i][price];
-        $image_names[$i] = $result[$i][image_source];
-        $description[$i] = $result[$i][description];
-        $pids[$i]=$result[$i][pid];
+        $result[$i][name] = htmlspecialchars($result[$i][name]);
+        $result[$i][catid] = htmlspecialchars($result[$i][catid]);
+        $result[$i][price] = htmlspecialchars($result[$i][price]);
+        $result[$i][image_source] = htmlspecialchars($result[$i][image_source]);
+        $result[$i][description] = htmlspecialchars($result[$i][description]);
+        $result[$i][pid]=htmlspecialchars($result[$i][pid]);
         $i = $i + 1;
     }
-    $txt = '';
-    $conn=null;
 
-    $j = 0;
-    while($j < $i) {
-        $txt = $txt . '<li><a onclick=\'load_prod('.htmlspecialchars($catids[$j]) .','. htmlspecialchars($pids[$j]). ')\' ><img  src="img/' .htmlspecialchars($image_names[$j]) .'"/></a>'
-            . '<a onclick=\'load_prod('.htmlspecialchars($catids[$j]) .','.htmlspecialchars($pids[$j]) .')\' > name :'.htmlspecialchars($names[$j]). '</a><br />' .
-            '<a> price : '.htmlspecialchars($prices[$j]). '</a><br />'
-         . '<a><button id="tocart" onclick="addtocart('.htmlspecialchars($pids[$j]).')">addToCart</button></a></li>';
-        $j=$j+1;
-    }
-    echo $txt;
+    $conn=null;
+    echo json_encode($result);
 
 }
 
@@ -73,10 +63,13 @@ function loadprod()
     $q_2 = $conn_2->prepare('SELECT * FROM products where pid = ?'  );
     $q_2->execute(array($product_name));
     $result = $q_2->fetchAll(PDO::FETCH_ASSOC);
-    echo "<li>" . $result[0]['name'] . "</li>";
+    $result[0][image_source]=htmlspecialchars($result[0][image_source]);
+    $result[0]['name']=htmlspecialchars($result[0]['name']);
+    $result[0]['price']=htmlspecialchars($result[0]['price']);
+    $result[0]['description']=htmlspecialchars($result[0]['description']);
+    echo json_encode($result);
 
-    echo '<tr><td rowspan="4"><img src="img/' . htmlspecialchars($result[0]['image_source']). '"></td><td>Item: ' . htmlspecialchars($result[0]['name']) . '<br /></td></tr><tr><td>price: $' . htmlspecialchars($result[0]['price']) . '</td></tr>'
-        . '<tr><td>description: ' . htmlspecialchars($result[0]['description']) . '</td></tr>' . '<tr><td><a><button id="tocart" onclick="addtocart('.htmlspecialchars($product_name).')">addToCart</button></a></td></tr>';
+
 }
 
 
@@ -91,7 +84,9 @@ function cartinfo()
     $q_2 = $conn_2->prepare('SELECT name , price FROM products where pid = ?' );
     $q_2->execute(array($product_name));
     $result = $q_2->fetchAll(PDO::FETCH_ASSOC);
-    echo json_encode(htmlspecialchars($result));
+    $result[name]=htmlspecialchars($result[name]);
+    $result[price]=htmlspecialchars($result[price]);
+    echo json_encode($result);
 }
 
 

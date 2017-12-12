@@ -228,7 +228,17 @@ session_start();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 document.getElementById("prod_info").innerHTML ='';
-                document.getElementById("cat_list").innerHTML = this.responseText;
+
+                var text = "";
+                var result = JSON.parse(this.response);
+                var i=0;
+                while(result[i] !=null) {
+                    text+=  '<li onclick=\'load_list(' +i +')\'>'+result[i]['name']+'</li>';
+                    i=i+1;
+                }
+
+
+                document.getElementById("cat_list").innerHTML = text;
                 document.getElementById("list").innerHTML = '';
             }
         };
@@ -246,16 +256,21 @@ session_start();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 var url = window.location.href;
-
-                //var tmp = url.replace(/&prod=[\w\-\s]*/gi,"");
-                //var tmp = url.replace(/\?catid=[%20]*[\d]*/gi,"");
-                //history.replaceState(null,url,tmp+'?catid='+(id+1));
-
-
-                //location.href = '?catid='+(id+1);
                 document.getElementById("prod_info").innerHTML ='';
                 document.getElementById("list").innerHTML = '';
-                document.getElementById("list").innerHTML = this.responseText;
+
+                var text = "";
+                var result = JSON.parse(this.response);
+                var i=0;
+                while(result[i] !=null) {
+                    text += '<li><a onclick=\'load_prod(' + result[i]['catid'] + ',' + result[i]['pid'] + ')\' ><img  src="img/' + result[i]['image_source'] + '"/></a>' +
+                    '<a onclick=\'load_prod(' + result[i]['catid'] + ',' + result[i]['pid'] + ')\' > name :' + result[i]['name'] + '</a><br />' + '<a> price : ' + result[i]['price'] + '</a><br />'
+                    + '<a><button id="tocart" onclick="addtocart(' + result[i]['pid'] + ')">addToCart</button></a></li>';
+                    i=i+1;
+                }
+
+                document.getElementById("list").innerHTML =text;
+
                 document.getElementById("nave").innerHTML = '';
                 document.getElementById("nave").innerHTML = "<a onclick=\'home_page()\'>home</a>" + '   >   category ' + (id+1);
 
@@ -273,7 +288,13 @@ session_start();
             if (this.readyState == 4 && this.status == 200) {
                 document.getElementById("nave").innerHTML = '';
                 document.getElementById("nave").innerHTML = "<a onclick=\'home_page()\'>home</a>" + "<a onclick=\'load_list("+ (id-1) +")\'>   >   category "+id +"</a>" +  '  >  product pid  ' + pid;
-                document.getElementById("prod_info").innerHTML = this.responseText;
+
+                var result = JSON.parse(this.response);
+
+                document.getElementById("prod_info").innerHTML ="<li>" + result[0]['name'] + "</li>"+ '<tr><td rowspan="4"><img src="img/' + result[0]['image_source'] + '"></td><td>Item: '
+                    + result[0]['name'] + '<br /></td></tr><tr><td>price: $' + result[0]['price'] +
+                    '</td></tr>' + '<tr><td>description: ' + result[0]['description'] + '</td></tr>'
+                    + '<tr><td><a><button id="tocart" onclick="addtocart('+pid+')">addToCart</button></a></td></tr>';
                 document.getElementById("list").innerHTML = '';
             }
         };
@@ -283,26 +304,6 @@ session_start();
 
     }
 
-/*
-    function GetRequest() {
-        var url = location.search; //获取url中"?"符后的字串
-        var theRequest = new Object();
-        if (url.indexOf("?") != -1) {
-            var str = url.substr(1);
-            strs = str.split("&");
-            for(var i = 0; i < strs.length; i ++) {
-                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
-            }
-
-            load_list(theRequest['catid']-1);
-        }
-        else
-            return false;
-        //alert(theRequest['catid']);
-
-    }
-
-*/
     function logout() {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {

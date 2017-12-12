@@ -94,10 +94,10 @@ function ierg4210_prod_add()
         }
 
 
-        $new_name = "dummpy";
-        $new_name = $conn->lastInsertId() . $_POST[image_type];
-        $q = $conn->prepare('INSERT INTO products  VALUES (null,?,?,?,?,?)');
-        $q->execute(array($_POST[catid],$_POST[name],$new_name,$_POST[price],$_POST['description']));
+        //$new_name = "dummpy";
+
+        $q = $conn->prepare('INSERT INTO products  VALUES (null,?,?,null,?,?)');
+        $q->execute(array($_POST[catid],$_POST[name],$_POST[price],$_POST['description']));
         if($_FILES['myfile']['type']=="image/jpeg" )
             $new_name = $conn->lastInsertId() . ".jpg";
         elseif ($_FILES['myfile']['type']=="image/png")
@@ -230,33 +230,6 @@ function ierg4210_cat_update()
    echo "Done!";
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
